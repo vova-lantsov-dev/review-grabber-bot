@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ReviewGrabberBot.Options;
+using ReviewGrabberBot.Services;
 
 namespace ReviewGrabberBot
 {
@@ -18,6 +19,8 @@ namespace ReviewGrabberBot
                         options.DatabaseName = "reviewbot";
                         options.ReviewCollectionName = "reviews";
                     });
+
+                    services.AddSingleton<Context>();
                 })
                 .RunConsoleAsync();
         }
