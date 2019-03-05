@@ -1,5 +1,5 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Microsoft.Extensions.Hosting;
 
 namespace ReviewGrabberBot
 {
@@ -7,7 +7,11 @@ namespace ReviewGrabberBot
     {
         internal static async Task Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            await new HostBuilder()
+                .ConfigureServices(services =>
+                {
+                })
+                .RunConsoleAsync();
         }
     }
 }
