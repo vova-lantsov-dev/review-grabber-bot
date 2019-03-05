@@ -19,6 +19,10 @@ namespace ReviewGrabberBot
                         options.DatabaseName = "reviewbot";
                         options.ReviewCollectionName = "reviews";
                     });
+                    services.Configure<BotOptions>(options =>
+                    {
+                        options.Token = Constants.BotToken;
+                    });
 
                     services.AddSingleton<Context>();
                 })
