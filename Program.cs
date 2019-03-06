@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ReviewGrabberBot.Options;
 using ReviewGrabberBot.Services;
+using Telegram.Bot;
 
 namespace ReviewGrabberBot
 {
@@ -21,10 +22,11 @@ namespace ReviewGrabberBot
                     });
                     services.Configure<BotOptions>(options =>
                     {
-                        options.Token = Constants.BotToken;
+                        options.AdminId = "336510341";
                     });
 
                     services.AddSingleton<Context>();
+                    services.AddSingleton(new TelegramBotClient(Constants.BotToken));
                 })
                 .RunConsoleAsync();
         }
