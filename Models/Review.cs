@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace ReviewGrabberBot.Models
@@ -25,5 +26,7 @@ namespace ReviewGrabberBot.Models
         [BsonElement("text")] public string Text;
 
         [BsonElement("is_readonly")] public bool IsReadOnly;
+
+        [BsonElement("comments")] public List<string> Comments;
     }
 }
