@@ -5,6 +5,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace ReviewGrabberBot.Models
 {
+    [BsonIgnoreExtraElements]
     public sealed class Review
     {
         public string Id;
@@ -21,7 +22,11 @@ namespace ReviewGrabberBot.Models
 
         [BsonElement("author_name")] public string AuthorName;
 
-        [BsonElement("rating")] public string Rating;
+        [BsonElement("author_avatar")] public string AuthorAvatar;
+
+        [BsonElement("photos")] public List<string> Photos;
+
+        [BsonElement("rating")] public int Rating;
 
         [BsonElement("date")] public string Date;
 
