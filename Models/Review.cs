@@ -38,14 +38,12 @@ namespace ReviewGrabberBot.Models
 
         public override string ToString()
         {
-            int.TryParse(Rating, out var ratingValue);
-            
             var result = new StringBuilder();
             result.AppendFormat("*ОТЗЫВ*\n_{0} ({1})_", AuthorName, Date);
-            if (ratingValue > 0)
+            if (Rating > 0)
             {
                 result.Append("\nРейтинг: ");
-                result.AppendJoin(string.Empty, Enumerable.Repeat("⭐️", ratingValue));
+                result.AppendJoin(string.Empty, Enumerable.Repeat("⭐️", Rating));
             }
             result.AppendFormat("\nРесторан: {0}\nИсточник: {1}\nТекст: {2}", RestaurantName, Resource, Text);
             
