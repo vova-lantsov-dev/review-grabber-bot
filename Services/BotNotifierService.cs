@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
+using ReviewGrabberBot.Models;
 using ReviewGrabberBot.Options;
 using Telegram.Bot;
 using Telegram.Bot.Types.Enums;
@@ -45,7 +46,7 @@ namespace ReviewGrabberBot.Services
                                 new InlineKeyboardButton { Text = "Просмотреть отзывы",
                                     CallbackData = $"comments~{notSentReview.Id}" }
                             });
-                        if (!notSentReview.IsReadOnly)
+                        if (!notSentReview.IsReadOnly && notSentReview.ReplyLink != null)
                             buttons.Add(new List<InlineKeyboardButton>
                             {
                                 new InlineKeyboardButton { Text = "Открыть отзыв", Url = notSentReview.ReplyLink }
@@ -54,11 +55,18 @@ namespace ReviewGrabberBot.Services
                             cancellationToken: stoppingToken, replyMarkup: buttons.Count > 0
                                 ? new InlineKeyboardMarkup(buttons)
                                 : null);
+                        await _context.Reviews.UpdateOneAsync(r => r.Id == notSentReview.Id,
+                            Builders<Review>.Update.Set(r => r.NeedToShow, false),
+                            cancellationToken: stoppingToken);
                     }
                 }
                 catch (TaskCanceledException)
                 {
                     // ignored
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
                 }
             }
         }
