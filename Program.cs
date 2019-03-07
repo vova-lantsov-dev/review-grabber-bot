@@ -59,6 +59,7 @@ namespace ReviewGrabberBot
                     services.AddSingleton<UpdateHandler>();
 
                     services.AddHostedService<BotHandlerService>();
+                    services.AddHostedService<ScriptRunnerService>();
                 })
                 .RunConsoleAsync();
         }
