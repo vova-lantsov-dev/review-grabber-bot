@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace ReviewGrabberBot.Models
@@ -8,7 +9,7 @@ namespace ReviewGrabberBot.Models
     [BsonIgnoreExtraElements]
     public sealed class Review
     {
-        public string Id;
+        [BsonRepresentation(BsonType.ObjectId)] public string Id;
         
         [BsonElement("resource")] public string Resource;
         
@@ -17,8 +18,6 @@ namespace ReviewGrabberBot.Models
         [BsonElement("need_to_show")] public bool NeedToShow;
 
         [BsonElement("reply_link")] public string ReplyLink;
-
-        [BsonElement("source_id")] public string SourceId;
 
         [BsonElement("author_name")] public string AuthorName;
 
