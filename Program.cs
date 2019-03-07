@@ -60,6 +60,7 @@ namespace ReviewGrabberBot
 
                     services.AddHostedService<BotHandlerService>();
                     services.AddHostedService<ScriptRunnerService>();
+                    services.AddHostedService<BotNotifierService>();
                 })
                 .RunConsoleAsync();
         }
