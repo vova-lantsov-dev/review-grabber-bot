@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
+using ReviewGrabberBot.Exceptions;
 using ReviewGrabberBot.Handlers;
 using ReviewGrabberBot.Models;
 using ReviewGrabberBot.Options;
@@ -35,28 +36,25 @@ namespace ReviewGrabberBot
                     services.Configure<BotOptions>(options =>
                     {
                         options.AdminId = config["ADMIN_ID"]
-                            ?? throw new Exception("REVIEWBOT_ADMIN_ID environment variable was not found");
+                            ?? throw new EnvironmentVariableNotFoundException("ADMIN_ID");
                     });
                     services.Configure<NotifierOptions>(options =>
                     {
                         options.WorkingDirectory = config["WORKING_DIRECTORY"]
-                           ?? throw new Exception(
-                               "REVIEWBOT_WORKING_DIRECTORY environment variable was not found");
-                        
+                            ?? throw new EnvironmentVariableNotFoundException("WORKING_DIRECTORY");
                         if (!Directory.Exists(options.WorkingDirectory))
-                            throw new DirectoryNotFoundException("REVIEWBOT_WORKING_DIRECTORY directory was not found");
+                            throw new EnvironmentVariableDirectoryNotFoundException("WORKING_DIRECTORY");
 
                         options.ScrapyPath = config["SCRAPY_PATH"]
-                            ?? throw new Exception("REVIEWBOT_SCRAPY_PATH environment variable was not found");
+                            ?? throw new EnvironmentVariableNotFoundException("SCRAPY_PATH");
                         if (!File.Exists(options.ScrapyPath))
-                            throw new FileNotFoundException("REVIEWBOT_SCRAPY_PATH file was not found");
+                            throw new EnvironmentVariableFileNotFoundException("SCRAPY_PATH");
                         
                         var notifierOptionsPath = config["NOTIFIER_OPTIONS_PATH"]
-                            ?? throw new Exception(
-                                "REVIEWBOT_NOTIFIER_OPTIONS_PATH environment variable was not found");
-                        
+                            ?? throw new EnvironmentVariableNotFoundException("NOTIFIER_OPTIONS_PATH");
                         if (!File.Exists(notifierOptionsPath))
-                            throw new FileNotFoundException("REVIEWBOT_NOTIFIER_OPTIONS_PATH file was not found");
+                            throw new EnvironmentVariableFileNotFoundException("NOTIFIER_OPTIONS_PATH");
+                        
                         var json = File.ReadAllText(notifierOptionsPath);
                         options.Restaurants = JsonConvert.DeserializeObject<List<Restaurant>>(json);
                     });
