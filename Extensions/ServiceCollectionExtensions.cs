@@ -29,15 +29,15 @@ namespace ReviewGrabberBot.Extensions
             services.Configure<NotifierOptions>(options =>
             {
                 options.WorkingDirectory = config["WORKING_DIRECTORY"]
-                                           ?? throw new EnvironmentVariableNotFoundException("WORKING_DIRECTORY");
+                    ?? throw new EnvironmentVariableNotFoundException("WORKING_DIRECTORY");
                 if (!Directory.Exists(options.WorkingDirectory))
                     throw new EnvironmentVariableDirectoryNotFoundException("WORKING_DIRECTORY");
 
                 options.ScrapyPath = config["SCRAPY_PATH"]
-                                     ?? throw new EnvironmentVariableNotFoundException("SCRAPY_PATH");
+                    ?? throw new EnvironmentVariableNotFoundException("SCRAPY_PATH");
                         
                 var notifierOptionsPath = config["NOTIFIER_OPTIONS_PATH"]
-                                          ?? throw new EnvironmentVariableNotFoundException("NOTIFIER_OPTIONS_PATH");
+                    ?? throw new EnvironmentVariableNotFoundException("NOTIFIER_OPTIONS_PATH");
                 if (!File.Exists(notifierOptionsPath))
                     throw new EnvironmentVariableFileNotFoundException("NOTIFIER_OPTIONS_PATH");
                         
