@@ -45,6 +45,11 @@ namespace ReviewGrabberBot
                         
                         if (!Directory.Exists(options.WorkingDirectory))
                             throw new DirectoryNotFoundException("REVIEWBOT_WORKING_DIRECTORY directory was not found");
+
+                        options.ScrapyPath = config["SCRAPY_PATH"]
+                            ?? throw new Exception("REVIEWBOT_SCRAPY_PATH environment variable was not found");
+                        if (!File.Exists(options.ScrapyPath))
+                            throw new FileNotFoundException("REVIEWBOT_SCRAPY_PATH file was not found");
                         
                         var notifierOptionsPath = config["NOTIFIER_OPTIONS_PATH"]
                             ?? throw new Exception(

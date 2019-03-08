@@ -14,11 +14,13 @@ namespace ReviewGrabberBot.Services
     {
         private readonly List<Restaurant> _restaurants;
         private readonly string _workingDirectory;
+        private readonly string _scrapyPath;
         
         public ScriptRunnerService(IOptions<NotifierOptions> options)
         {
             _restaurants = options.Value.Restaurants ?? throw new ArgumentException("Restaurants field is null.");
             _workingDirectory = options.Value.WorkingDirectory;
+            _scrapyPath = options.Value.ScrapyPath;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -59,7 +61,7 @@ namespace ReviewGrabberBot.Services
                         WorkingDirectory = _workingDirectory,
                         Arguments =
                             $"crawl {resource} -a uri=\"{link(restaurant)}\" -a restaurant_name=\"{restaurant.Name}\"",
-                        FileName = "scrapy"
+                        FileName = _scrapyPath
                     };
                     var process = Process.Start(processInfo);
                     process?.WaitForExit();
