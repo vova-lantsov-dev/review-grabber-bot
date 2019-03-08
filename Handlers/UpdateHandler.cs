@@ -49,8 +49,9 @@ namespace ReviewGrabberBot.Handlers
                         await _client.EditMessageTextAsync(_adminId, q.Message.MessageId,
                             string.Concat(review, "\n\n", "*Комментарии:*", "\n\n",
                                 string.Join("\n\n", review.Comments)),
-                            ParseMode.Markdown, replyMarkup:
-                            new InlineKeyboardButton {Text = "Открыть отзыв", Url = review.ReplyLink});
+                            ParseMode.Markdown, replyMarkup: !review.IsReadOnly && review.ReplyLink != null
+                                ? new InlineKeyboardButton {Text = "Открыть отзыв", Url = review.ReplyLink}
+                                : null);
                     }
                     catch (Exception e)
                     {
