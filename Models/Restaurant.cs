@@ -1,13 +1,15 @@
+using Newtonsoft.Json;
+
 namespace ReviewGrabberBot.Models
 {
     internal sealed class Restaurant
     {
-        public string Name;
-        public string GoogleUrl;
-        public string FoursquareUrl;
-        public string RestoclubUrl;
-        public string RestoratingUrl;
-        public string TripadvisorUrl;
-        public string YellUrl;
+        [JsonProperty(Required = Required.Always)] public string Name;
+        [JsonProperty(Required = Required.Always)] public string GoogleUrl;
+        [JsonProperty(Required = Required.Always)] public string FoursquareUrl;
+        [JsonProperty(Required = Required.Always)] public string RestoclubUrl;
+        [JsonProperty(Required = Required.Always)] public string RestoratingUrl;
+        [JsonProperty(Required = Required.Always)] public string TripadvisorUrl;
+        [JsonProperty(Required = Required.Always)] public string YellUrl;
     }
 }
