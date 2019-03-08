@@ -51,7 +51,7 @@ namespace ReviewGrabberBot
                                 "REVIEWBOT_NOTIFIER_OPTIONS_PATH environment variable was not found");
                         
                         if (!File.Exists(notifierOptionsPath))
-                            throw new FileNotFoundException("REVIEW_NOTIFIER_OPTIONS_PATH file was not found");
+                            throw new FileNotFoundException("REVIEWBOT_NOTIFIER_OPTIONS_PATH file was not found");
                         var json = File.ReadAllText(notifierOptionsPath);
                         options.Restaurants = JsonConvert.DeserializeObject<List<Restaurant>>(json);
                     });
