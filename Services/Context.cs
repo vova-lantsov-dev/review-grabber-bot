@@ -9,7 +9,7 @@ namespace ReviewGrabberBot.Services
     {
         internal readonly IMongoCollection<Review> Reviews;
         
-        internal Context(IOptions<ContextOptions> options)
+        public Context(IOptions<ContextOptions> options)
         {
             var mongoClient = new MongoClient(options.Value.ConnectionString);
             var db = mongoClient.GetDatabase(options.Value.DatabaseName);

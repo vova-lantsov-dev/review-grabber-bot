@@ -18,7 +18,7 @@ namespace ReviewGrabberBot.Handlers
         private readonly int _adminId;
         private readonly Context _context;
         
-        internal UpdateHandler(TelegramBotClient client, Context context, IOptions<BotOptions> options)
+        public UpdateHandler(TelegramBotClient client, Context context, IOptions<BotOptions> options)
         {
             _adminId = options.Value.AdminId;
             _client = client;

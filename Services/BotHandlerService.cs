@@ -11,7 +11,7 @@ namespace ReviewGrabberBot.Services
         private readonly UpdateHandler _updateHandler;
         private readonly TelegramBotClient _client;
         
-        internal BotHandlerService(UpdateHandler updateHandler, TelegramBotClient client)
+        public BotHandlerService(UpdateHandler updateHandler, TelegramBotClient client)
         {
             _updateHandler = updateHandler;
             _client = client;

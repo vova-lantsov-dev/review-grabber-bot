@@ -16,7 +16,7 @@ namespace ReviewGrabberBot.Services
         private readonly string _workingDirectory;
         private readonly string _scrapyPath;
         
-        internal ScriptRunnerService(IOptions<NotifierOptions> options)
+        public ScriptRunnerService(IOptions<NotifierOptions> options)
         {
             _restaurants = options.Value.Restaurants ?? throw new ArgumentException("Restaurants field is null.");
             _workingDirectory = options.Value.WorkingDirectory;

@@ -19,7 +19,7 @@ namespace ReviewGrabberBot.Services
         private readonly Context _context;
         private readonly int _adminId;
         
-        internal BotNotifierService(Context context, TelegramBotClient client, IOptions<BotOptions> options)
+        public BotNotifierService(Context context, TelegramBotClient client, IOptions<BotOptions> options)
         {
             _adminId = options.Value.AdminId;
             _context = context;
