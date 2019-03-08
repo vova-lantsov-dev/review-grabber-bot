@@ -1,6 +1,6 @@
 namespace ReviewGrabberBot.Models
 {
-    public sealed class Restaurant
+    internal sealed class Restaurant
     {
         public string Name;
         public string GoogleUrl;

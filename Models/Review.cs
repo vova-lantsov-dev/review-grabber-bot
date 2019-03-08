@@ -7,7 +7,7 @@ using MongoDB.Bson.Serialization.Attributes;
 namespace ReviewGrabberBot.Models
 {
     [BsonIgnoreExtraElements]
-    public sealed class Review
+    internal sealed class Review
     {
         [BsonRepresentation(BsonType.ObjectId)] public string Id;
         

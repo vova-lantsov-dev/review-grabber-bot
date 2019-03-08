@@ -5,11 +5,11 @@ using ReviewGrabberBot.Options;
 
 namespace ReviewGrabberBot.Services
 {
-    public sealed class Context
+    internal sealed class Context
     {
-        public readonly IMongoCollection<Review> Reviews;
+        internal readonly IMongoCollection<Review> Reviews;
         
-        public Context(IOptions<ContextOptions> options)
+        internal Context(IOptions<ContextOptions> options)
         {
             var mongoClient = new MongoClient(options.Value.ConnectionString);
             var db = mongoClient.GetDatabase(options.Value.DatabaseName);

@@ -13,13 +13,13 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace ReviewGrabberBot.Services
 {
-    public sealed class BotNotifierService : BackgroundService
+    internal sealed class BotNotifierService : BackgroundService
     {
         private readonly TelegramBotClient _client;
         private readonly Context _context;
         private readonly int _adminId;
         
-        public BotNotifierService(Context context, TelegramBotClient client, IOptions<BotOptions> options)
+        internal BotNotifierService(Context context, TelegramBotClient client, IOptions<BotOptions> options)
         {
             if (!int.TryParse(options.Value.AdminId, out _adminId))
                 throw new ArgumentException("Admin id must be integer");

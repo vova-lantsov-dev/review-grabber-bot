@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
@@ -15,7 +14,7 @@ using Telegram.Bot;
 
 namespace ReviewGrabberBot
 {
-    public class Program
+    internal sealed class Program
     {
         internal static async Task Main(string[] args)
         {

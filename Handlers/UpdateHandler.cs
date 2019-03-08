@@ -12,13 +12,13 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace ReviewGrabberBot.Handlers
 {
-    public sealed class UpdateHandler : IUpdateHandler
+    internal sealed class UpdateHandler : IUpdateHandler
     {
         private readonly TelegramBotClient _client;
         private readonly int _adminId;
         private readonly Context _context;
         
-        public UpdateHandler(TelegramBotClient client, Context context, IOptions<BotOptions> options)
+        internal UpdateHandler(TelegramBotClient client, Context context, IOptions<BotOptions> options)
         {
             if (!int.TryParse(options.Value.AdminId, out _adminId))
                 throw new ArgumentException("Admin id must be an integer. Please, update settings file.");

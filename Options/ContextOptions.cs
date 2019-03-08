@@ -1,6 +1,6 @@
 namespace ReviewGrabberBot.Options
 {
-    public sealed class ContextOptions
+    internal sealed class ContextOptions
     {
         public string ConnectionString;
         public string DatabaseName;

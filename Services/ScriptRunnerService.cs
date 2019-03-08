@@ -10,13 +10,13 @@ using ReviewGrabberBot.Options;
 
 namespace ReviewGrabberBot.Services
 {
-    public sealed class ScriptRunnerService : BackgroundService
+    internal sealed class ScriptRunnerService : BackgroundService
     {
         private readonly List<Restaurant> _restaurants;
         private readonly string _workingDirectory;
         private readonly string _scrapyPath;
         
-        public ScriptRunnerService(IOptions<NotifierOptions> options)
+        internal ScriptRunnerService(IOptions<NotifierOptions> options)
         {
             _restaurants = options.Value.Restaurants ?? throw new ArgumentException("Restaurants field is null.");
             _workingDirectory = options.Value.WorkingDirectory;

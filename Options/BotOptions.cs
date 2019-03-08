@@ -1,6 +1,6 @@
 namespace ReviewGrabberBot.Options
 {
-    public sealed class BotOptions
+    internal sealed class BotOptions
     {
         public string AdminId;
     }
