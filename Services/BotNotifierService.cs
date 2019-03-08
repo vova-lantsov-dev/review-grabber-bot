@@ -34,29 +34,8 @@ namespace ReviewGrabberBot.Services
             {
                 try
                 {
-                    var notSentReviews = await _context.Reviews.Find(r => r.NeedToShow).ToListAsync(stoppingToken);
-                    foreach (var notSentReview in notSentReviews)
-                    {
-                        var buttons = new List<List<InlineKeyboardButton>>();
-                        if ((notSentReview.Comments?.Count ?? 0) > 0)
-                            buttons.Add(new List<InlineKeyboardButton>
-                            {
-                                new InlineKeyboardButton { Text = "Просмотреть отзывы",
-                                    CallbackData = $"comments~{notSentReview.Id}" }
-                            });
-                        if (!notSentReview.IsReadOnly && notSentReview.ReplyLink != null)
-                            buttons.Add(new List<InlineKeyboardButton>
-                            {
-                                new InlineKeyboardButton { Text = "Открыть отзыв", Url = notSentReview.ReplyLink }
-                            });
-                        await _client.SendTextMessageAsync(_adminId, notSentReview.ToString(), ParseMode.Markdown,
-                            cancellationToken: stoppingToken, replyMarkup: buttons.Count > 0
-                                ? new InlineKeyboardMarkup(buttons)
-                                : null);
-                        await _context.Reviews.UpdateOneAsync(r => r.Id == notSentReview.Id,
-                            Builders<Review>.Update.Set(r => r.NeedToShow, false),
-                            cancellationToken: stoppingToken);
-                    }
+                    await Task.WhenAll(GetNotifierTask(stoppingToken),
+                        Task.Delay(TimeSpan.FromMinutes(60d), stoppingToken));
                 }
                 catch (TaskCanceledException)
                 {
@@ -66,6 +45,33 @@ namespace ReviewGrabberBot.Services
                 {
                     Console.WriteLine(e);
                 }
+            }
+        }
+
+        private async Task GetNotifierTask(CancellationToken cancellationToken)
+        {
+            var notSentReviews = await _context.Reviews.Find(r => r.NeedToShow).ToListAsync(cancellationToken);
+            foreach (var notSentReview in notSentReviews)
+            {
+                var buttons = new List<List<InlineKeyboardButton>>();
+                if ((notSentReview.Comments?.Count ?? 0) > 0)
+                    buttons.Add(new List<InlineKeyboardButton>
+                    {
+                        new InlineKeyboardButton { Text = "Просмотреть отзывы",
+                            CallbackData = $"comments~{notSentReview.Id}" }
+                    });
+                if (!notSentReview.IsReadOnly && notSentReview.ReplyLink != null)
+                    buttons.Add(new List<InlineKeyboardButton>
+                    {
+                        new InlineKeyboardButton { Text = "Открыть отзыв", Url = notSentReview.ReplyLink }
+                    });
+                await _client.SendTextMessageAsync(_adminId, notSentReview.ToString(), ParseMode.Markdown,
+                    cancellationToken: cancellationToken, replyMarkup: buttons.Count > 0
+                        ? new InlineKeyboardMarkup(buttons)
+                        : null);
+                await _context.Reviews.UpdateOneAsync(r => r.Id == notSentReview.Id,
+                    Builders<Review>.Update.Set(r => r.NeedToShow, false),
+                    cancellationToken: cancellationToken);
             }
         }
     }
