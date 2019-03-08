@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.Extensions.Configuration;
@@ -21,8 +22,10 @@ namespace ReviewGrabberBot.Extensions
             });
             services.Configure<BotOptions>(options =>
             {
-                options.AdminId = config["ADMIN_ID"]
-                                  ?? throw new EnvironmentVariableNotFoundException("ADMIN_ID");
+                if (!int.TryParse(config["ADMIN_ID"]
+                    ?? throw new EnvironmentVariableNotFoundException("ADMIN_ID"),
+                    out options.AdminId))
+                    throw new EnvironmentVariableMustBeIntegerException("ADMIN_ID");
             });
             services.Configure<NotifierOptions>(options =>
             {

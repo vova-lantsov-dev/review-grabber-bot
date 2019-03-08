@@ -21,9 +21,7 @@ namespace ReviewGrabberBot.Services
         
         internal BotNotifierService(Context context, TelegramBotClient client, IOptions<BotOptions> options)
         {
-            if (!int.TryParse(options.Value.AdminId, out _adminId))
-                throw new ArgumentException("Admin id must be integer");
-            
+            _adminId = options.Value.AdminId;
             _context = context;
             _client = client;
         }

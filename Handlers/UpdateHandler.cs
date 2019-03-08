@@ -20,9 +20,7 @@ namespace ReviewGrabberBot.Handlers
         
         internal UpdateHandler(TelegramBotClient client, Context context, IOptions<BotOptions> options)
         {
-            if (!int.TryParse(options.Value.AdminId, out _adminId))
-                throw new ArgumentException("Admin id must be an integer. Please, update settings file.");
-
+            _adminId = options.Value.AdminId;
             _client = client;
             _context = context;
         }
