@@ -13,10 +13,12 @@ namespace ReviewGrabberBot.Services
     public sealed class ScriptRunnerService : BackgroundService
     {
         private readonly List<Restaurant> _restaurants;
+        private readonly string _workingDirectory;
         
         public ScriptRunnerService(IOptions<NotifierOptions> options)
         {
             _restaurants = options.Value.Restaurants ?? throw new ArgumentException("Restaurants field is null.");
+            _workingDirectory = options.Value.WorkingDirectory;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -54,7 +56,7 @@ namespace ReviewGrabberBot.Services
                 {
                     var processInfo = new ProcessStartInfo
                     {
-                        WorkingDirectory = @"C:\Users\Panda Eye\Downloads\Telegram Desktop\reviewbot\reviewbot\reviewbot",
+                        WorkingDirectory = _workingDirectory,
                         Arguments =
                             $"crawl {resource} -a uri=\"{link(restaurant)}\" -a restaurant_name=\"{restaurant.Name}\"",
                         FileName = "scrapy"

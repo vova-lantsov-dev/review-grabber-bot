@@ -39,6 +39,13 @@ namespace ReviewGrabberBot
                     });
                     services.Configure<NotifierOptions>(options =>
                     {
+                        options.WorkingDirectory = config["WORKING_DIRECTORY"]
+                           ?? throw new Exception(
+                               "REVIEWBOT_WORKING_DIRECTORY environment variable was not found");
+                        
+                        if (!Directory.Exists(options.WorkingDirectory))
+                            throw new DirectoryNotFoundException("REVIEWBOT_WORKING_DIRECTORY directory was not found");
+                        
                         var notifierOptionsPath = config["NOTIFIER_OPTIONS_PATH"]
                             ?? throw new Exception(
                                 "REVIEWBOT_NOTIFIER_OPTIONS_PATH environment variable was not found");

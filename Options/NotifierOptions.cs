@@ -6,5 +6,6 @@ namespace ReviewGrabberBot.Options
     public sealed class NotifierOptions
     {
         public List<Restaurant> Restaurants;
+        public string WorkingDirectory;
     }
 }
