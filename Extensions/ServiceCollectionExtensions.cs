@@ -35,8 +35,6 @@ namespace ReviewGrabberBot.Extensions
 
                 options.ScrapyPath = config["SCRAPY_PATH"]
                                      ?? throw new EnvironmentVariableNotFoundException("SCRAPY_PATH");
-                if (!File.Exists(options.ScrapyPath))
-                    throw new EnvironmentVariableFileNotFoundException("SCRAPY_PATH");
                         
                 var notifierOptionsPath = config["NOTIFIER_OPTIONS_PATH"]
                                           ?? throw new EnvironmentVariableNotFoundException("NOTIFIER_OPTIONS_PATH");
