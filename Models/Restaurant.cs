@@ -11,5 +11,8 @@ namespace ReviewGrabberBot.Models
         [JsonProperty(Required = Required.Always)] public string RestoratingUrl;
         [JsonProperty(Required = Required.Always)] public string TripadvisorUrl;
         [JsonProperty(Required = Required.Always)] public string YellUrl;
+        [JsonProperty(Required = Required.Always)] public string VkUrl;
+        [JsonProperty(Required = Required.Always)] public string FacebookUrl;
+        [JsonProperty(Required = Required.Always)] public string YandexUrl;
     }
 }

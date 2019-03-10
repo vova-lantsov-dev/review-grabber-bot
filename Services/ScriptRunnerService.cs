@@ -50,7 +50,10 @@ namespace ReviewGrabberBot.Services
                     ["foursquare"] = r => r.FoursquareUrl,
                     ["restoclub"] = r => r.RestoclubUrl,
                     ["restorating"] = r => r.RestoratingUrl,
-                    ["yell"] = r => r.YellUrl
+                    ["yell"] = r => r.YellUrl,
+                    ["facebook"] = r => r.FacebookUrl,
+                    ["yandex"] = r => r.YandexUrl,
+                    ["vk"] = r => r.VkUrl
                 };
 
                 foreach (var restaurant in _restaurants)
