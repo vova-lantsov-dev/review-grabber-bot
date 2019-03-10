@@ -11,7 +11,7 @@ namespace ReviewGrabberBot.Extensions
 {
     internal static class ServiceCollectionExtensions
     {
-        internal static void ConfigureOptions(this IServiceCollection services, IConfiguration config)
+        internal static void ConfigureOptions(this IServiceCollection services, IConfiguration config, out string botToken)
         {
             services.Configure<ContextOptions>(options =>
             {
@@ -44,6 +44,9 @@ namespace ReviewGrabberBot.Extensions
                 var json = File.ReadAllText(notifierOptionsPath);
                 options.Restaurants = JsonConvert.DeserializeObject<List<Restaurant>>(json);
             });
+
+            botToken = config["BOT_TOKEN"]
+                ?? throw new EnvironmentVariableNotFoundException("BOT_TOKEN");
         }
     }
 }
