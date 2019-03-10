@@ -18,7 +18,7 @@ namespace ReviewGrabberBot.Services
         
         public ScriptRunnerService(IOptions<NotifierOptions> options)
         {
-            _restaurants = options.Value.Restaurants ?? throw new ArgumentException("Restaurants field is null.");
+            _restaurants = options.Value.Restaurants;
             _workingDirectory = options.Value.WorkingDirectory;
             _scrapyPath = options.Value.ScrapyPath;
         }
