@@ -7,6 +7,7 @@ namespace ReviewGrabberBot.Options
     {
         public List<Restaurant> Restaurants;
         public string WorkingDirectory;
-        public string ScrapyPath;
+        public string Arguments;
+        public string FileName;
     }
 }

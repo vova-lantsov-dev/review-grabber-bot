@@ -14,13 +14,15 @@ namespace ReviewGrabberBot.Services
     {
         private readonly List<Restaurant> _restaurants;
         private readonly string _workingDirectory;
-        private readonly string _scrapyPath;
+        private readonly string _fileName;
+        private readonly string _arguments;
         
         public ScriptRunnerService(IOptions<NotifierOptions> options)
         {
             _restaurants = options.Value.Restaurants;
             _workingDirectory = options.Value.WorkingDirectory;
-            _scrapyPath = options.Value.ScrapyPath;
+            _fileName = options.Value.FileName;
+            _arguments = options.Value.Arguments;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -62,9 +64,8 @@ namespace ReviewGrabberBot.Services
                     var processInfo = new ProcessStartInfo
                     {
                         WorkingDirectory = _workingDirectory,
-                        Arguments =
-                            $"crawl {resource} -a uri=\"{link(restaurant)}\" -a restaurant_name=\"{restaurant.Name}\"",
-                        FileName = _scrapyPath
+                        Arguments = string.Format(_arguments, resource, link(restaurant), restaurant.Name),
+                        FileName = _fileName
                     };
                     var process = Process.Start(processInfo);
                     process?.WaitForExit();

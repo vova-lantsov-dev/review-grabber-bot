@@ -33,8 +33,11 @@ namespace ReviewGrabberBot.Extensions
                 if (!Directory.Exists(options.WorkingDirectory))
                     throw new EnvironmentVariableDirectoryNotFoundException("WORKING_DIRECTORY");
 
-                options.ScrapyPath = config["SCRAPY_PATH"]
-                    ?? throw new EnvironmentVariableNotFoundException("SCRAPY_PATH");
+                options.FileName = config["FILE_NAME"]
+                    ?? throw new EnvironmentVariableNotFoundException("FILE_NAME");
+
+                options.Arguments = config["ARGUMENTS"]
+                    ?? throw new EnvironmentVariableNotFoundException("ARGUMENTS");
                         
                 var notifierOptionsPath = config["NOTIFIER_OPTIONS_PATH"]
                     ?? throw new EnvironmentVariableNotFoundException("NOTIFIER_OPTIONS_PATH");
