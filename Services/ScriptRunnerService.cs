@@ -45,26 +45,13 @@ namespace ReviewGrabberBot.Services
         {
             return Task.Run(() =>
             {
-                var reviewPlatforms = new Dictionary<string, Func<Restaurant, string>>
-                {
-                    ["tripadvisor"] = r => r.TripadvisorUrl,
-                    ["google"] = r => r.GoogleUrl,
-                    ["foursquare"] = r => r.FoursquareUrl,
-                    ["restoclub"] = r => r.RestoclubUrl,
-                    ["restorating"] = r => r.RestoratingUrl,
-                    ["yell"] = r => r.YellUrl,
-                    ["facebook"] = r => r.FacebookUrl,
-                    ["yandex"] = r => r.YandexUrl,
-                    ["vk"] = r => r.VkUrl
-                };
-
                 foreach (var restaurant in _restaurants)
-                foreach (var (resource, link) in reviewPlatforms)
+                foreach (var (resource, link) in restaurant.Urls)
                 {
                     var processInfo = new ProcessStartInfo
                     {
                         WorkingDirectory = _workingDirectory,
-                        Arguments = string.Format(_arguments, resource, link(restaurant), restaurant.Name),
+                        Arguments = string.Format(_arguments, resource, link, restaurant.Name),
                         FileName = _fileName
                     };
                     var process = Process.Start(processInfo);
