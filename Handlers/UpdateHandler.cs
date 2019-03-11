@@ -69,7 +69,8 @@ namespace ReviewGrabberBot.Handlers
                     {
                         await _client.SendTextMessageAsync(_adminId,
                             string.Concat($"*Received bad request*\n\n```separated[1] == \"{separated[1]}\"```\n\n",
-                                "Maybe, something works wrong. Please, contact the developer."), cancellationToken: _cancellationToken);
+                                "Maybe, something works wrong. Please, contact the developer."), 
+                            ParseMode.Markdown, cancellationToken: _cancellationToken);
                     }
                     catch (Exception e)
                     {
