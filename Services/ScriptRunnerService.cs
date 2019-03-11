@@ -38,6 +38,10 @@ namespace ReviewGrabberBot.Services
                 {
                     // ignored
                 }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
             }
         }
 
