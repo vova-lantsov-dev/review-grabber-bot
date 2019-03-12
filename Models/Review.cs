@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using ReviewGrabberBot.Formatters;
 
 namespace ReviewGrabberBot.Models
 {
@@ -25,7 +26,7 @@ namespace ReviewGrabberBot.Models
 
         [BsonElement("photos")] public List<string> Photos;
 
-        [BsonElement("rating")] public int Rating;
+        [BsonElement("rating"), BsonSerializer(typeof(RatingMongoFormatter))] public int Rating;
 
         [BsonElement("date")] public string Date;
 
