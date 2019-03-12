@@ -28,7 +28,7 @@ namespace ReviewGrabberBot.Services
         
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            await Task.Delay(TimeSpan.FromMinutes(1d), stoppingToken);
+            await Task.Delay(TimeSpan.FromMinutes(5d), stoppingToken);
 
             while (!stoppingToken.IsCancellationRequested)
             {
