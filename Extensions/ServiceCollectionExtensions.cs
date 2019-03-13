@@ -21,7 +21,7 @@ namespace ReviewGrabberBot.Extensions
             });
             services.Configure<BotOptions>(options =>
             {
-                if (!int.TryParse(config["ADMIN_ID"]
+                if (!long.TryParse(config["ADMIN_ID"]
                     ?? throw new EnvironmentVariableNotFoundException("ADMIN_ID"),
                     out options.AdminId))
                     throw new EnvironmentVariableMustBeIntegerException("ADMIN_ID");

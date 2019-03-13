@@ -17,7 +17,7 @@ namespace ReviewGrabberBot.Handlers
     internal sealed class UpdateHandler : IUpdateHandler
     {
         private readonly TelegramBotClient _client;
-        private readonly int _adminId;
+        private readonly long _adminId;
         private readonly Context _context;
         private readonly CancellationToken _cancellationToken;
         

@@ -17,7 +17,7 @@ namespace ReviewGrabberBot.Services
     {
         private readonly TelegramBotClient _client;
         private readonly Context _context;
-        private readonly int _adminId;
+        private readonly long _adminId;
         
         public BotNotifierService(Context context, TelegramBotClient client, IOptions<BotOptions> options)
         {
