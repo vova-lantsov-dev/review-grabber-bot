@@ -40,10 +40,13 @@ namespace ReviewGrabberBot.Models
 
         [BsonElement("dislikes")] public int Dislikes;
 
+        [BsonElement("profile_link")] public string ProfileUrl;
+
         public override string ToString()
         {
             var result = new StringBuilder();
-            result.AppendFormat("*ОТЗЫВ*\n_{0} ({1})_", AuthorName, Date);
+            result.AppendFormat("{0} _({1})_", ProfileUrl == null
+                ? $"*{AuthorName}*" : $"[{AuthorName}]({ProfileUrl})", Date);
 
             if (Rating > 0)
             {
