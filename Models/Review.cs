@@ -36,17 +36,30 @@ namespace ReviewGrabberBot.Models
 
         [BsonElement("comments")] public List<string> Comments;
 
+        [BsonElement("likes")] public int Likes;
+
+        [BsonElement("dislikes")] public int Dislikes;
+
         public override string ToString()
         {
             var result = new StringBuilder();
             result.AppendFormat("*ОТЗЫВ*\n_{0} ({1})_", AuthorName, Date);
+
             if (Rating > 0)
             {
                 result.Append("\nРейтинг: ");
                 result.AppendJoin(string.Empty, Enumerable.Repeat("⭐️", Rating));
             }
+
+            if (Likes > 0)
+            {
+                result.AppendFormat("\n{0} {1}", Likes, Dislikes <= 0 ? "❤️" : "👍");
+
+                if (Dislikes > 0)
+                    result.AppendFormat("\n{0} 👎", Dislikes);
+            }
+
             result.AppendFormat("\nРесторан: {0}\nИсточник: {1}\nТекст: {2}", RestaurantName, Resource, Text);
-            
             return result.ToString();
         }
     }
