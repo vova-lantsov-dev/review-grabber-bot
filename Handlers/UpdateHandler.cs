@@ -19,17 +19,15 @@ namespace ReviewGrabberBot.Handlers
         private readonly TelegramBotClient _client;
         private readonly long _adminId;
         private readonly Context _context;
-        private readonly CancellationToken _cancellationToken;
         
-        public UpdateHandler(TelegramBotClient client, Context context, IOptions<BotOptions> options, IApplicationLifetime lifetime)
+        public UpdateHandler(TelegramBotClient client, Context context, IOptions<BotOptions> options)
         {
             _adminId = options.Value.AdminId;
             _client = client;
             _context = context;
-            _cancellationToken = lifetime.ApplicationStopping;
         }
         
-        public async Task HandleUpdate(Update update)
+        public async Task HandleUpdate(Update update, CancellationToken cancellationToken)
         {
             var q = update.CallbackQuery;
             
@@ -44,7 +42,7 @@ namespace ReviewGrabberBot.Handlers
             switch (separated[0])
             {
                 case "comments" when separated.Length == 2:
-                    var review = await _context.Reviews.Find(r => r.Id == separated[1]).SingleOrDefaultAsync(_cancellationToken);
+                    var review = await _context.Reviews.Find(r => r.Id == separated[1]).SingleOrDefaultAsync(cancellationToken);
                     if (review == default)
                         break;
 
@@ -55,7 +53,7 @@ namespace ReviewGrabberBot.Handlers
                                 string.Join("\n\n", review.Comments)),
                             ParseMode.Markdown, replyMarkup: !review.IsReadOnly && review.ReplyLink != null
                                 ? new InlineKeyboardButton {Text = "Открыть отзыв", Url = review.ReplyLink}
-                                : null, cancellationToken: _cancellationToken);
+                                : null, cancellationToken: cancellationToken);
                     }
                     catch (Exception e)
                     {
@@ -70,7 +68,7 @@ namespace ReviewGrabberBot.Handlers
                         await _client.SendTextMessageAsync(_adminId,
                             string.Concat($"*Received bad request*\n\n```separated[1] == \"{separated[1]}\"```\n\n",
                                 "Maybe, something works wrong. Please, contact the developer."), 
-                            ParseMode.Markdown, cancellationToken: _cancellationToken);
+                            ParseMode.Markdown, cancellationToken: cancellationToken);
                     }
                     catch (Exception e)
                     {
@@ -82,7 +80,7 @@ namespace ReviewGrabberBot.Handlers
 
             try
             {
-                await _client.AnswerCallbackQueryAsync(q.Id, cancellationToken: _cancellationToken);
+                await _client.AnswerCallbackQueryAsync(q.Id, cancellationToken: cancellationToken);
             }
             catch (Exception e)
             {
@@ -90,13 +88,13 @@ namespace ReviewGrabberBot.Handlers
             }
         }
 
-        public async Task HandleError(Exception exception)
+        public async Task HandleError(Exception exception, CancellationToken cancellationToken)
         {
             try
             {
                 await _client.SendTextMessageAsync(_adminId,
                     $"*Error occurred while getting updates*\n\n```{exception}```\n\nPlease, contact the developer.",
-                    ParseMode.Markdown, cancellationToken: _cancellationToken);
+                    ParseMode.Markdown, cancellationToken: cancellationToken);
             }
             catch (Exception e)
             {
