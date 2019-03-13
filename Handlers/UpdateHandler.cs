@@ -34,7 +34,7 @@ namespace ReviewGrabberBot.Handlers
             var q = update.CallbackQuery;
             
             if (q == null || q.InlineMessageId != null || q.Message.Chat.Type != ChatType.Private ||
-                q.From.Id != _adminId)
+                q.Message.Chat.Id != _adminId)
                 return;
 
             var separated = q.Data.Split('~');
