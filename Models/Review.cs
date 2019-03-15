@@ -45,8 +45,9 @@ namespace ReviewGrabberBot.Models
         public override string ToString()
         {
             var result = new StringBuilder();
-            result.AppendFormat("{0} _({1})_", ProfileUrl == null
-                ? $"*{AuthorName}*" : $"[{AuthorName}]({ProfileUrl})", Date);
+            
+            result.AppendFormat("Ресторан: *{0}*\nИсточник: *{1}*\n{2} _({3})_", RestaurantName, Resource,
+                string.IsNullOrWhiteSpace(ProfileUrl) ? AuthorName : $"[{AuthorName}]({ProfileUrl})", Date);
 
             if (Rating > 0)
             {
@@ -62,7 +63,7 @@ namespace ReviewGrabberBot.Models
                     result.AppendFormat("\n{0} 👎", Dislikes);
             }
 
-            result.AppendFormat("\nРесторан: {0}\nИсточник: {1}\nТекст: {2}", RestaurantName, Resource, Text);
+            result.AppendFormat("\nТекст: {0}", Text);
             return result.ToString();
         }
     }
