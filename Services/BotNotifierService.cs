@@ -18,10 +18,12 @@ namespace ReviewGrabberBot.Services
         private readonly TelegramBotClient _client;
         private readonly Context _context;
         private readonly long _adminId;
+        private readonly Dictionary<string, int> _maxValuesOfRating;
         
-        public BotNotifierService(Context context, TelegramBotClient client, IOptions<BotOptions> options)
+        public BotNotifierService(Context context, TelegramBotClient client, IOptions<BotOptions> options, IOptions<NotifierOptions> notifierOptions)
         {
             _adminId = options.Value.AdminId;
+            _maxValuesOfRating = notifierOptions.Value.Data.MaxValuesOfRating;
             _context = context;
             _client = client;
         }
@@ -65,10 +67,11 @@ namespace ReviewGrabberBot.Services
                     {
                         new InlineKeyboardButton { Text = "Открыть отзыв", Url = notSentReview.ReplyLink }
                     });
-                await _client.SendTextMessageAsync(_adminId, notSentReview.ToString(), ParseMode.Markdown,
+                await _client.SendTextMessageAsync(_adminId, notSentReview.ToString(
+                        _maxValuesOfRating.TryGetValue(notSentReview.Resource, out var maxValueOfRating)
+                            ? maxValueOfRating : -1), ParseMode.Markdown,
                     cancellationToken: cancellationToken, replyMarkup: buttons.Count > 0
-                        ? new InlineKeyboardMarkup(buttons)
-                        : null);
+                        ? new InlineKeyboardMarkup(buttons) : null);
                 await _context.Reviews.UpdateOneAsync(r => r.Id == notSentReview.Id,
                     Builders<Review>.Update.Set(r => r.NeedToShow, false),
                     cancellationToken: cancellationToken);

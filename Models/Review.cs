@@ -44,7 +44,7 @@ namespace ReviewGrabberBot.Models
 
         [BsonElement("profile_link")] public string ProfileUrl;
 
-        public override string ToString()
+        public string ToString(int maxCountOfStars)
         {
             var result = new StringBuilder();
             
@@ -54,7 +54,11 @@ namespace ReviewGrabberBot.Models
             if (Rating > 0)
             {
                 result.Append("\nРейтинг: ");
-                result.AppendJoin(string.Empty, Enumerable.Repeat("⭐️", Rating));
+                result.AppendJoin(string.Empty, Enumerable.Repeat("👍", Rating));
+
+                var emptyStarsCount = maxCountOfStars - Rating;
+                if (emptyStarsCount > 0)
+                    result.AppendJoin(string.Empty, Enumerable.Repeat("👍🏿", emptyStarsCount));
             }
 
             if (Likes > 0)

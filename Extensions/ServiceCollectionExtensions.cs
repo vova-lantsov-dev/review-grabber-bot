@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.IO;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -45,7 +44,7 @@ namespace ReviewGrabberBot.Extensions
                     throw new EnvironmentVariableFileNotFoundException("NOTIFIER_OPTIONS_PATH");
                         
                 var json = File.ReadAllText(notifierOptionsPath);
-                options.Restaurants = JsonConvert.DeserializeObject<List<Restaurant>>(json);
+                options.Data = JsonConvert.DeserializeObject<NotifierOptionsData>(json);
             });
 
             botToken = config["BOT_TOKEN"]
