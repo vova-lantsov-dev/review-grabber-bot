@@ -4,6 +4,8 @@ using System.Text;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using ReviewGrabberBot.Formatters;
+// ReSharper disable All
+#pragma warning disable 649
 
 namespace ReviewGrabberBot.Models
 {
