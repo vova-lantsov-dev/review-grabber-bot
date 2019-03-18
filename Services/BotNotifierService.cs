@@ -9,6 +9,7 @@ using MongoDB.Driver;
 using ReviewGrabberBot.Models;
 using ReviewGrabberBot.Options;
 using Telegram.Bot;
+using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 
@@ -68,9 +69,10 @@ namespace ReviewGrabberBot.Services
                         new InlineKeyboardButton { Text = "Открыть отзыв", Url = notSentReview.ReplyLink }
                     });
 
+                Message sentMessage;
                 if (string.IsNullOrWhiteSpace(notSentReview.AuthorAvatar))
                 {
-                    await _client.SendTextMessageAsync(_adminId, notSentReview.ToString(
+                    sentMessage = await _client.SendTextMessageAsync(_adminId, notSentReview.ToString(
                             _maxValuesOfRating.TryGetValue(notSentReview.Resource, out var maxValueOfRating)
                                 ? maxValueOfRating : -1), ParseMode.Markdown,
                         cancellationToken: cancellationToken, replyMarkup: buttons.Count > 0
@@ -79,9 +81,16 @@ namespace ReviewGrabberBot.Services
                 else
                 {
                     await _client.SendChatActionAsync(_adminId, ChatAction.UploadPhoto, cancellationToken);
-                    await _client.SendPhotoAsync(_adminId, notSentReview.AuthorAvatar, notSentReview.ToString(
+                    sentMessage = await _client.SendPhotoAsync(_adminId, notSentReview.AuthorAvatar, notSentReview.ToString(
                         _maxValuesOfRating.TryGetValue(notSentReview.Resource, out var maxValueOfRating)
                             ? maxValueOfRating : -1), ParseMode.Markdown, cancellationToken: cancellationToken);
+                }
+
+                if (notSentReview.Resource == "google")
+                {
+                    await _context.GoogleReviewMessages.UpdateOneAsync(grm => grm.ReviewId == notSentReview.Id,
+                        Builders<GoogleReviewMessage>.Update.Set(grm => grm.MessageId, sentMessage.MessageId),
+                        new UpdateOptions {IsUpsert = true}, cancellationToken);
                 }
 
                 // ReSharper disable once MethodSupportsCancellation
