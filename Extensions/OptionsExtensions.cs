@@ -8,7 +8,7 @@ using ReviewGrabberBot.Options;
 
 namespace ReviewGrabberBot.Extensions
 {
-    internal static class ServiceCollectionExtensions
+    internal static class OptionsExtensions
     {
         internal static void ConfigureOptions(this IServiceCollection services, IConfiguration config, out string botToken)
         {

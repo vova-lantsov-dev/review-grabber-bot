@@ -1,11 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ReviewGrabberBot.Extensions;
-using ReviewGrabberBot.Handlers;
-using ReviewGrabberBot.Services;
-using Telegram.Bot;
 
 namespace ReviewGrabberBot
 {
@@ -21,14 +17,7 @@ namespace ReviewGrabberBot
                 .ConfigureServices((context, services) =>
                 {
                     services.ConfigureOptions(context.Configuration, out var botToken);
-
-                    services.AddSingleton<Context>();
-                    services.AddSingleton(new TelegramBotClient(botToken));
-                    services.AddSingleton<UpdateHandler>();
-
-                    services.AddHostedService<BotHandlerService>();
-                    services.AddHostedService<ScriptRunnerService>();
-                    services.AddHostedService<BotNotifierService>();
+                    services.ConfigureServices(botToken);
                 })
                 .RunConsoleAsync();
         }
