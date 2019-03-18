@@ -44,6 +44,8 @@ namespace ReviewGrabberBot.Models
 
         [BsonElement("profile_link")] public string ProfileUrl;
 
+        [BsonElement("author_avatar")] public string AvatarUrl;
+
         public string ToString(int maxCountOfStars)
         {
             var result = new StringBuilder();

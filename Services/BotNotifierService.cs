@@ -67,11 +67,23 @@ namespace ReviewGrabberBot.Services
                     {
                         new InlineKeyboardButton { Text = "Открыть отзыв", Url = notSentReview.ReplyLink }
                     });
-                await _client.SendTextMessageAsync(_adminId, notSentReview.ToString(
-                        _maxValuesOfRating.TryGetValue(notSentReview.Resource, out var maxValueOfRating)
-                            ? maxValueOfRating : -1), ParseMode.Markdown,
-                    cancellationToken: cancellationToken, replyMarkup: buttons.Count > 0
-                        ? new InlineKeyboardMarkup(buttons) : null);
+                
+                if (string.IsNullOrWhiteSpace(notSentReview.AuthorAvatar))
+                {
+                    await _client.SendTextMessageAsync(_adminId, notSentReview.ToString(
+                            _maxValuesOfRating.TryGetValue(notSentReview.Resource, out var maxValueOfRating)
+                                ? maxValueOfRating : -1), ParseMode.Markdown,
+                        cancellationToken: cancellationToken, replyMarkup: buttons.Count > 0
+                            ? new InlineKeyboardMarkup(buttons) : null);
+                }
+                else
+                {
+                    await _client.SendChatActionAsync(_adminId, ChatAction.UploadPhoto, cancellationToken);
+                    await _client.SendPhotoAsync(_adminId, notSentReview.AuthorAvatar, notSentReview.ToString(
+                            _maxValuesOfRating.TryGetValue(notSentReview.Resource, out var maxValueOfRating)
+                                ? maxValueOfRating : -1), ParseMode.Markdown, cancellationToken: cancellationToken);
+                }
+
                 await _context.Reviews.UpdateOneAsync(r => r.Id == notSentReview.Id,
                     Builders<Review>.Update.Set(r => r.NeedToShow, false),
                     cancellationToken: cancellationToken);
