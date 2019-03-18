@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ReviewGrabberBot.Models;
 using ReviewGrabberBot.Options;
@@ -12,17 +13,19 @@ namespace ReviewGrabberBot.Services
 {
     internal sealed class ScriptRunnerService : BackgroundService
     {
+        private readonly ILogger<ScriptRunnerService> _logger;
         private readonly List<Restaurant> _restaurants;
         private readonly string _workingDirectory;
         private readonly string _fileName;
         private readonly string _arguments;
         
-        public ScriptRunnerService(IOptions<NotifierOptions> options)
+        public ScriptRunnerService(IOptions<NotifierOptions> options, ILogger<ScriptRunnerService> logger)
         {
             _restaurants = options.Value.Data.Restaurants;
             _workingDirectory = options.Value.WorkingDirectory;
             _fileName = options.Value.FileName;
             _arguments = options.Value.Arguments;
+            _logger = logger;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -34,13 +37,9 @@ namespace ReviewGrabberBot.Services
                     await Task.WhenAll(GetNotifierTask(stoppingToken),
                         Task.Delay(TimeSpan.FromMinutes(60d), stoppingToken));
                 }
-                catch (TaskCanceledException)
-                {
-                    // ignored
-                }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    _logger.LogError(e, "Error occurred while running a WhenAll method");
                 }
             }
         }

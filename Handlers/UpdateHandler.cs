@@ -1,7 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using ReviewGrabberBot.Options;
@@ -19,12 +19,14 @@ namespace ReviewGrabberBot.Handlers
         private readonly TelegramBotClient _client;
         private readonly long _adminId;
         private readonly Context _context;
+        private readonly ILogger<UpdateHandler> _logger;
         
-        public UpdateHandler(TelegramBotClient client, Context context, IOptions<BotOptions> options)
+        public UpdateHandler(TelegramBotClient client, Context context, IOptions<BotOptions> options, ILogger<UpdateHandler> logger)
         {
             _adminId = options.Value.AdminId;
             _client = client;
             _context = context;
+            _logger = logger;
         }
         
         public async Task HandleUpdate(Update update, CancellationToken cancellationToken)
@@ -46,46 +48,25 @@ namespace ReviewGrabberBot.Handlers
                     if (review == default)
                         break;
 
-                    try
-                    {
-                        await _client.EditMessageTextAsync(_adminId, q.Message.MessageId,
-                            string.Concat(review, "\n\n", "*Комментарии:*", "\n\n",
-                                string.Join("\n\n", review.Comments)),
-                            ParseMode.Markdown, replyMarkup: !review.IsReadOnly && review.ReplyLink != null
-                                ? new InlineKeyboardButton {Text = "Открыть отзыв", Url = review.ReplyLink}
-                                : null, cancellationToken: cancellationToken);
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine(e);
-                    }
+                    await _client.EditMessageTextAsync(_adminId, q.Message.MessageId,
+                        string.Concat(review, "\n\n", "*Комментарии:*", "\n\n",
+                            string.Join("\n\n", review.Comments)),
+                        ParseMode.Markdown, replyMarkup: !review.IsReadOnly && review.ReplyLink != null
+                            ? new InlineKeyboardButton {Text = "Открыть отзыв", Url = review.ReplyLink}
+                            : null, cancellationToken: cancellationToken);
 
                     break;
 
                 default:
-                    try
-                    {
-                        await _client.SendTextMessageAsync(_adminId,
-                            string.Concat($"*Received bad request*\n\n```separated[1] == \"{separated[1]}\"```\n\n",
-                                "Maybe, something works wrong. Please, contact the developer."), 
-                            ParseMode.Markdown, cancellationToken: cancellationToken);
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine(e);
-                    }
+                    await _client.SendTextMessageAsync(_adminId,
+                        string.Concat($"*Received bad request*\n\n```separated[1] == \"{separated[1]}\"```\n\n",
+                            "Maybe, something works wrong. Please, contact the developer."), 
+                        ParseMode.Markdown, cancellationToken: cancellationToken);
 
                     break;
             }
 
-            try
-            {
-                await _client.AnswerCallbackQueryAsync(q.Id, cancellationToken: cancellationToken);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
+            await _client.AnswerCallbackQueryAsync(q.Id, cancellationToken: cancellationToken);
         }
 
         public async Task HandleError(Exception exception, CancellationToken cancellationToken)
@@ -98,7 +79,7 @@ namespace ReviewGrabberBot.Handlers
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                _logger.LogError(e, "Error occurred while while sending the request to a Telegram server");
             }
         }
 

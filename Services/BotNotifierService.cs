@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using ReviewGrabberBot.Models;
@@ -15,13 +16,16 @@ namespace ReviewGrabberBot.Services
 {
     internal sealed class BotNotifierService : BackgroundService
     {
+        private readonly ILogger<BotNotifierService> _logger;
         private readonly TelegramBotClient _client;
         private readonly Context _context;
         private readonly long _adminId;
         private readonly Dictionary<string, int> _maxValuesOfRating;
         
-        public BotNotifierService(Context context, TelegramBotClient client, IOptions<BotOptions> options, IOptions<NotifierOptions> notifierOptions)
+        public BotNotifierService(Context context, TelegramBotClient client, IOptions<BotOptions> options,
+            IOptions<NotifierOptions> notifierOptions, ILogger<BotNotifierService> logger)
         {
+            _logger = logger;
             _adminId = options.Value.AdminId;
             _maxValuesOfRating = notifierOptions.Value.Data.MaxValuesOfRating;
             _context = context;
@@ -39,13 +43,9 @@ namespace ReviewGrabberBot.Services
                     await Task.WhenAll(GetNotifierTask(stoppingToken),
                         Task.Delay(TimeSpan.FromMinutes(60d), stoppingToken));
                 }
-                catch (TaskCanceledException)
-                {
-                    // ignored
-                }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    _logger.LogError(e, "Error occurred while running a WhenAll method");
                 }
             }
         }
@@ -67,7 +67,7 @@ namespace ReviewGrabberBot.Services
                     {
                         new InlineKeyboardButton { Text = "Открыть отзыв", Url = notSentReview.ReplyLink }
                     });
-                
+
                 if (string.IsNullOrWhiteSpace(notSentReview.AuthorAvatar))
                 {
                     await _client.SendTextMessageAsync(_adminId, notSentReview.ToString(
@@ -80,13 +80,16 @@ namespace ReviewGrabberBot.Services
                 {
                     await _client.SendChatActionAsync(_adminId, ChatAction.UploadPhoto, cancellationToken);
                     await _client.SendPhotoAsync(_adminId, notSentReview.AuthorAvatar, notSentReview.ToString(
-                            _maxValuesOfRating.TryGetValue(notSentReview.Resource, out var maxValueOfRating)
-                                ? maxValueOfRating : -1), ParseMode.Markdown, cancellationToken: cancellationToken);
+                        _maxValuesOfRating.TryGetValue(notSentReview.Resource, out var maxValueOfRating)
+                            ? maxValueOfRating : -1), ParseMode.Markdown, cancellationToken: cancellationToken);
                 }
 
+                // ReSharper disable once MethodSupportsCancellation
                 await _context.Reviews.UpdateOneAsync(r => r.Id == notSentReview.Id,
-                    Builders<Review>.Update.Set(r => r.NeedToShow, false),
-                    cancellationToken: cancellationToken);
+                    Builders<Review>.Update.Set(r => r.NeedToShow, false));
+                
+                if (cancellationToken.IsCancellationRequested)
+                    throw new OperationCanceledException(cancellationToken);
             }
         }
     }
