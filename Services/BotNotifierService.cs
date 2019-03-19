@@ -63,7 +63,7 @@ namespace ReviewGrabberBot.Services
                         new InlineKeyboardButton { Text = "Просмотреть отзывы",
                             CallbackData = $"comments~{notSentReview.Id}" }
                     });
-                if (!notSentReview.IsReadOnly && notSentReview.ReplyLink != null)
+                if (!notSentReview.IsReadOnly && notSentReview.ReplyLink != null && notSentReview.Resource != "google")
                     buttons.Add(new List<InlineKeyboardButton>
                     {
                         new InlineKeyboardButton { Text = "Открыть отзыв", Url = notSentReview.ReplyLink }
