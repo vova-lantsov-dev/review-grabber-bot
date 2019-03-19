@@ -49,12 +49,12 @@ namespace ReviewGrabberBot.Models
             var result = new StringBuilder();
 
             var link = !preferAvatarOverProfileLink ? ProfileUrl ?? AuthorAvatar : AuthorAvatar ?? ProfileUrl;
-            result.AppendFormat("Ресторан: *{0}*\nИсточник: *{1}*\n{2} _({3})_", RestaurantName, Resource,
+            result.AppendFormat("_Ресторан:_ *{0}*\n_Источник:_ *{1}*\n{2} _({3})_", RestaurantName, Resource,
                 string.IsNullOrWhiteSpace(link) ? AuthorName : $"[{AuthorName}]({link})", Date);
 
             if (Rating > 0)
             {
-                result.Append("\nРейтинг: ");
+                result.Append("\n_Рейтинг:_ ");
                 result.AppendJoin(string.Empty, Enumerable.Repeat("👍", Rating));
 
                 var emptyStarsCount = maxCountOfStars - Rating;
@@ -71,7 +71,7 @@ namespace ReviewGrabberBot.Models
             }
 
             if (!string.IsNullOrWhiteSpace(Text))
-                result.AppendFormat("\nТекст: {0}", Text);
+                result.AppendFormat("\n_Текст:_ {0}", Text);
             
             return result.ToString();
         }
