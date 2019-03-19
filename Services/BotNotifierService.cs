@@ -69,22 +69,11 @@ namespace ReviewGrabberBot.Services
                         new InlineKeyboardButton { Text = "Открыть отзыв", Url = notSentReview.ReplyLink }
                     });
 
-                Message sentMessage;
-                if (string.IsNullOrWhiteSpace(notSentReview.AuthorAvatar))
-                {
-                    sentMessage = await _client.SendTextMessageAsync(_adminId, notSentReview.ToString(
-                            _maxValuesOfRating.TryGetValue(notSentReview.Resource, out var maxValueOfRating)
-                                ? maxValueOfRating : -1), ParseMode.Markdown,
-                        cancellationToken: cancellationToken, replyMarkup: buttons.Count > 0
-                            ? new InlineKeyboardMarkup(buttons) : null);
-                }
-                else
-                {
-                    await _client.SendChatActionAsync(_adminId, ChatAction.UploadPhoto, cancellationToken);
-                    sentMessage = await _client.SendPhotoAsync(_adminId, notSentReview.AuthorAvatar, notSentReview.ToString(
+                var sentMessage = await _client.SendTextMessageAsync(_adminId, notSentReview.ToString(
                         _maxValuesOfRating.TryGetValue(notSentReview.Resource, out var maxValueOfRating)
-                            ? maxValueOfRating : -1), ParseMode.Markdown, cancellationToken: cancellationToken);
-                }
+                            ? maxValueOfRating : -1), ParseMode.Markdown,
+                    cancellationToken: cancellationToken, replyMarkup: buttons.Count > 0
+                        ? new InlineKeyboardMarkup(buttons) : null);
 
                 if (notSentReview.Resource == "google")
                 {

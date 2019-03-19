@@ -47,9 +47,10 @@ namespace ReviewGrabberBot.Models
         public string ToString(int maxCountOfStars)
         {
             var result = new StringBuilder();
-            
+
+            var link = ProfileUrl ?? AuthorAvatar;
             result.AppendFormat("Ресторан: *{0}*\nИсточник: *{1}*\n{2} _({3})_", RestaurantName, Resource,
-                string.IsNullOrWhiteSpace(ProfileUrl) ? AuthorName : $"[{AuthorName}]({ProfileUrl})", Date);
+                string.IsNullOrWhiteSpace(link) ? AuthorName : $"[{AuthorName}]({link})", Date);
 
             if (Rating > 0)
             {
