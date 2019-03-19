@@ -44,11 +44,11 @@ namespace ReviewGrabberBot.Models
 
         [BsonElement("profile_link")] public string ProfileUrl;
 
-        public string ToString(int maxCountOfStars)
+        public string ToString(int maxCountOfStars, bool preferAvatarOverProfileLink)
         {
             var result = new StringBuilder();
 
-            var link = ProfileUrl ?? AuthorAvatar;
+            var link = !preferAvatarOverProfileLink ? ProfileUrl ?? AuthorAvatar : AuthorAvatar ?? ProfileUrl;
             result.AppendFormat("Ресторан: *{0}*\nИсточник: *{1}*\n{2} _({3})_", RestaurantName, Resource,
                 string.IsNullOrWhiteSpace(link) ? AuthorName : $"[{AuthorName}]({link})", Date);
 

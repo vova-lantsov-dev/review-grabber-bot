@@ -21,6 +21,7 @@ namespace ReviewGrabberBot.Services
         private readonly Context _context;
         private readonly long _adminId;
         private readonly Dictionary<string, int> _maxValuesOfRating;
+        private readonly List<string> _preferAvatarOverProfileLinkFor;
         
         public BotNotifierService(Context context, TelegramBotClient client, IOptions<BotOptions> options,
             IOptions<NotifierOptions> notifierOptions, ILogger<BotNotifierService> logger)
@@ -30,6 +31,7 @@ namespace ReviewGrabberBot.Services
             _maxValuesOfRating = notifierOptions.Value.Data.MaxValuesOfRating;
             _context = context;
             _client = client;
+            _preferAvatarOverProfileLinkFor = notifierOptions.Value.Data.PreferAvatarOverProfileLinkFor;
         }
         
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -70,8 +72,8 @@ namespace ReviewGrabberBot.Services
 
                 var sentMessage = await _client.SendTextMessageAsync(_adminId, notSentReview.ToString(
                         _maxValuesOfRating.TryGetValue(notSentReview.Resource, out var maxValueOfRating)
-                            ? maxValueOfRating : -1), ParseMode.Markdown,
-                    cancellationToken: cancellationToken, replyMarkup: buttons.Count > 0
+                            ? maxValueOfRating : -1, _preferAvatarOverProfileLinkFor.Contains(notSentReview.Resource)),
+                    ParseMode.Markdown, cancellationToken: cancellationToken, replyMarkup: buttons.Count > 0
                         ? new InlineKeyboardMarkup(buttons) : null);
 
                 if (notSentReview.Resource == "google")
