@@ -70,7 +70,9 @@ namespace ReviewGrabberBot.Models
                     result.AppendFormat("\n{0} 👎", Dislikes);
             }
 
-            result.AppendFormat("\nТекст: {0}", Text);
+            if (!string.IsNullOrWhiteSpace(Text))
+                result.AppendFormat("\nТекст: {0}", Text);
+            
             return result.ToString();
         }
     }
