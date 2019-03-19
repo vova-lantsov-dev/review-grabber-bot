@@ -9,7 +9,7 @@ namespace ReviewGrabberBot.Services
     {
         internal readonly IMongoCollection<Review> Reviews;
         internal readonly IMongoCollection<GoogleReviewMessage> GoogleReviewMessages;
-        internal readonly IMongoCollection<GoogleCredential> GoogleCredentials;
+        internal readonly IMongoCollection<Credential> GoogleCredentials;
         
         public Context(IOptions<ContextOptions> options)
         {
@@ -18,7 +18,7 @@ namespace ReviewGrabberBot.Services
 
             Reviews = db.GetCollection<Review>(options.Value.ReviewCollectionName);
             GoogleReviewMessages = db.GetCollection<GoogleReviewMessage>(nameof(GoogleReviewMessages));
-            GoogleCredentials = db.GetCollection<GoogleCredential>("google_credentials");
+            GoogleCredentials = db.GetCollection<Credential>("credentials");
         }
     }
 }

@@ -119,7 +119,7 @@ namespace ReviewGrabberBot.Handlers
                         return;
                     }
 
-                    var googleCredential = await _context.GoogleCredentials.Find(gc => gc.Id == "1")
+                    var googleCredential = await _context.GoogleCredentials.Find(gc => gc.Name == "google")
                         .FirstOrDefaultAsync(cancellationToken);
                     if (googleCredential == default)
                         return;

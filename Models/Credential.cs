@@ -2,9 +2,10 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace ReviewGrabberBot.Models
 {
-    internal sealed class GoogleCredential
+    [BsonIgnoreExtraElements]
+    internal sealed class Credential
     {
-        [BsonElement] public string Id;
+        [BsonElement("name")] public string Name;
         
         [BsonElement("access_token")] public string AccessToken;
     }
