@@ -88,7 +88,9 @@ namespace ReviewGrabberBot.Handlers
                 }
 
                 case UpdateType.Message
-                    when update.Message.Type == MessageType.Text && update.Message.ReplyToMessage != null:
+                    when update.Message.Type == MessageType.Text &&
+                         update.Message.ReplyToMessage != null &&
+                         _botData.AdminIds.Contains(update.Message.From.Id):
                 {
                     var m = update.Message;
 
