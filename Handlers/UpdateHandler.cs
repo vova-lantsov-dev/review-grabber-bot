@@ -43,7 +43,8 @@ namespace ReviewGrabberBot.Handlers
             switch (update.Type)
             {
                 case UpdateType.CallbackQuery when update.CallbackQuery.Message != null &&
-                                                   update.CallbackQuery.Message.Chat.Id == _adminId:
+                                                   update.CallbackQuery.Message.Chat.Id == _botData.ChatId &&
+                                                   _botData.AdminIds.Contains(update.CallbackQuery.From.Id):
                 {
                     var q = update.CallbackQuery;
                     var separated = q.Data.Split('~');
