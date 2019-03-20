@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using ReviewGrabberBot.Formatters;
@@ -71,7 +72,9 @@ namespace ReviewGrabberBot.Models
             }
 
             if (!string.IsNullOrWhiteSpace(Text))
-                result.AppendFormat("\n_Текст:_ {0}", Text);
+                result.AppendFormat("\n_Текст:_ {0}", Regex.Replace(Text,
+                    "(?<token>[*_\\\\`\\\\[\\]])",
+                    m => $"\\{m.Groups["token"].Value}"));
             
             return result.ToString();
         }
