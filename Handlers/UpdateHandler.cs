@@ -10,7 +10,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using ReviewGrabberBot.Models;
-using ReviewGrabberBot.Options;
 using ReviewGrabberBot.Services;
 using Telegram.Bot;
 using Telegram.Bot.Extensions.Polling;
@@ -23,15 +22,15 @@ namespace ReviewGrabberBot.Handlers
     internal sealed class UpdateHandler : IUpdateHandler
     {
         private readonly TelegramBotClient _client;
-        private readonly long _adminId;
+        private readonly BotData _botData;
         private readonly Context _context;
         private readonly ILogger<UpdateHandler> _logger;
         private readonly HttpClient _httpClient;
         
-        public UpdateHandler(TelegramBotClient client, Context context, IOptions<BotOptions> options,
+        public UpdateHandler(TelegramBotClient client, Context context, IOptions<Options.ReviewGrabberOptions> options,
             ILogger<UpdateHandler> logger, HttpClient httpClient)
         {
-            _adminId = options.Value.AdminId;
+            _botData = options.Value.BotData;
             _client = client;
             _context = context;
             _logger = logger;
@@ -60,31 +59,19 @@ namespace ReviewGrabberBot.Handlers
                             if (review == default)
                                 break;
 
-                            if (q.Message.Type == MessageType.Text)
-                            {
-                                await _client.EditMessageTextAsync(_adminId, q.Message.MessageId,
-                                    string.Concat(review, "\n\n", "*Комментарии:*", "\n\n",
-                                        string.Join("\n\n", review.Comments)),
-                                    ParseMode.Markdown, replyMarkup: !review.IsReadOnly && review.ReplyLink != null
-                                        ? new InlineKeyboardButton {Text = "Открыть отзыв", Url = review.ReplyLink}
-                                        : null, cancellationToken: cancellationToken);
-                            }
-                            else
-                            {
-                                await _client.EditMessageCaptionAsync(_adminId, q.Message.MessageId,
-                                    string.Concat(review, "\n\n", "*Комментарии:*", "\n\n",
-                                        string.Join("\n\n", review.Comments)),
-                                    !review.IsReadOnly && review.ReplyLink != null
-                                        ? new InlineKeyboardButton {Text = "Открыть отзыв", Url = review.ReplyLink}
-                                        : null, cancellationToken, ParseMode.Markdown);
-                            }
+                            await _client.EditMessageTextAsync(_botData.ChatId, q.Message.MessageId,
+                                string.Concat(review, "\n\n", "*Комментарии:*", "\n\n",
+                                    string.Join("\n\n", review.Comments)),
+                                ParseMode.Markdown, replyMarkup: !review.IsReadOnly && review.ReplyLink != null
+                                    ? new InlineKeyboardButton {Text = "Открыть отзыв", Url = review.ReplyLink}
+                                    : null, cancellationToken: cancellationToken);
 
                             break;
                         }
 
                         default:
                         {
-                            await _client.SendTextMessageAsync(_adminId,
+                            await _client.SendTextMessageAsync(_botData.ChatId,
                                 string.Concat($"*Received bad request*\n\n```separated[1] == \"{separated[1]}\"```\n\n",
                                     "Maybe, something works wrong. Please, contact the developer."),
                                 ParseMode.Markdown, cancellationToken: cancellationToken);
@@ -153,7 +140,7 @@ namespace ReviewGrabberBot.Handlers
         {
             try
             {
-                await _client.SendTextMessageAsync(_adminId,
+                await _client.SendTextMessageAsync(_botData.ChatId,
                     $"*Error occurred while getting updates*\n\n```{exception}```\n\nPlease, contact the developer.",
                     ParseMode.Markdown, cancellationToken: cancellationToken);
             }

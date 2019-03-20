@@ -19,19 +19,17 @@ namespace ReviewGrabberBot.Services
         private readonly ILogger<BotNotifierService> _logger;
         private readonly TelegramBotClient _client;
         private readonly Context _context;
-        private readonly long _adminId;
-        private readonly Dictionary<string, int> _maxValuesOfRating;
-        private readonly List<string> _preferAvatarOverProfileLinkFor;
+        private readonly NotifierData _notifierData;
+        private readonly long _chatId;
         
-        public BotNotifierService(Context context, TelegramBotClient client, IOptions<BotOptions> options,
-            IOptions<NotifierOptions> notifierOptions, ILogger<BotNotifierService> logger)
+        public BotNotifierService(Context context, TelegramBotClient client, IOptions<ReviewGrabberOptions> options,
+            ILogger<BotNotifierService> logger)
         {
             _logger = logger;
-            _adminId = options.Value.AdminId;
-            _maxValuesOfRating = notifierOptions.Value.Data.MaxValuesOfRating;
             _context = context;
             _client = client;
-            _preferAvatarOverProfileLinkFor = notifierOptions.Value.Data.PreferAvatarOverProfileLinkFor;
+            _notifierData = options.Value.NotifierData;
+            _chatId = options.Value.BotData.ChatId;
         }
         
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -70,9 +68,10 @@ namespace ReviewGrabberBot.Services
                         new InlineKeyboardButton { Text = "Открыть отзыв", Url = notSentReview.ReplyLink }
                     });
 
-                var sentMessage = await _client.SendTextMessageAsync(_adminId, notSentReview.ToString(
-                        _maxValuesOfRating.TryGetValue(notSentReview.Resource, out var maxValueOfRating)
-                            ? maxValueOfRating : -1, _preferAvatarOverProfileLinkFor.Contains(notSentReview.Resource)),
+                var sentMessage = await _client.SendTextMessageAsync(_chatId, notSentReview.ToString(
+                        _notifierData.MaxValuesOfRating.TryGetValue(notSentReview.Resource, out var maxValueOfRating)
+                            ? maxValueOfRating
+                            : -1, _notifierData.PreferAvatarOverProfileLinkFor.Contains(notSentReview.Resource)),
                     ParseMode.Markdown, cancellationToken: cancellationToken, replyMarkup: buttons.Count > 0
                         ? new InlineKeyboardMarkup(buttons) : null);
 

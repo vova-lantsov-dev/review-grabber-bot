@@ -3,7 +3,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using ReviewGrabberBot.Exceptions;
-using ReviewGrabberBot.Models;
 using ReviewGrabberBot.Options;
 
 namespace ReviewGrabberBot.Extensions
@@ -14,37 +13,18 @@ namespace ReviewGrabberBot.Extensions
         {
             services.Configure<ContextOptions>(options =>
             {
-                options.ConnectionString = config["CONNECTION_STRING"] ?? "mongodb://localhost";
+                options.ConnectionString = config["CONNECTION_STRING"];
                 options.DatabaseName = "reviewbot";
                 options.ReviewCollectionName = "reviews";
             });
-            services.Configure<BotOptions>(options =>
+            // ReSharper disable once RedundantAssignment
+            services.Configure<ReviewGrabberOptions>(options =>
             {
-                if (!long.TryParse(config["ADMIN_ID"]
-                    ?? throw new EnvironmentVariableNotFoundException("ADMIN_ID"),
-                    out options.AdminId))
-                    throw new EnvironmentVariableMustBeIntegerException("ADMIN_ID");
-            });
-            services.Configure<NotifierOptions>(options =>
-            {
-                options.WorkingDirectory = config["WORKING_DIRECTORY"]
-                    ?? throw new EnvironmentVariableNotFoundException("WORKING_DIRECTORY");
-                if (!Directory.Exists(options.WorkingDirectory))
-                    throw new EnvironmentVariableDirectoryNotFoundException("WORKING_DIRECTORY");
+                var reviewGrabberOptionsPath = config["REVIEW_GRABBER_OPTIONS_PATH"]
+                    ?? throw new EnvironmentVariableNotFoundException("REVIEW_GRABBER_OPTIONS_PATH");
 
-                options.FileName = config["FILE_NAME"]
-                    ?? throw new EnvironmentVariableNotFoundException("FILE_NAME");
-
-                options.Arguments = config["ARGUMENTS"]
-                    ?? throw new EnvironmentVariableNotFoundException("ARGUMENTS");
-                        
-                var notifierOptionsPath = config["NOTIFIER_OPTIONS_PATH"]
-                    ?? throw new EnvironmentVariableNotFoundException("NOTIFIER_OPTIONS_PATH");
-                if (!File.Exists(notifierOptionsPath))
-                    throw new EnvironmentVariableFileNotFoundException("NOTIFIER_OPTIONS_PATH");
-                        
-                var json = File.ReadAllText(notifierOptionsPath);
-                options.Data = JsonConvert.DeserializeObject<NotifierOptionsData>(json);
+                var json = File.ReadAllText(reviewGrabberOptionsPath);
+                options = JsonConvert.DeserializeObject<ReviewGrabberOptions>(json);
             });
 
             botToken = config["BOT_TOKEN"]

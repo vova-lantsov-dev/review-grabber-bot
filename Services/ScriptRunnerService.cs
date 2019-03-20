@@ -15,16 +15,12 @@ namespace ReviewGrabberBot.Services
     {
         private readonly ILogger<ScriptRunnerService> _logger;
         private readonly List<Restaurant> _restaurants;
-        private readonly string _workingDirectory;
-        private readonly string _fileName;
-        private readonly string _arguments;
+        private readonly ScriptRunnerData _scriptRunnerData;
         
-        public ScriptRunnerService(IOptions<NotifierOptions> options, ILogger<ScriptRunnerService> logger)
+        public ScriptRunnerService(IOptions<ReviewGrabberOptions> options, ILogger<ScriptRunnerService> logger)
         {
-            _restaurants = options.Value.Data.Restaurants;
-            _workingDirectory = options.Value.WorkingDirectory;
-            _fileName = options.Value.FileName;
-            _arguments = options.Value.Arguments;
+            _restaurants = options.Value.NotifierData.Restaurants;
+            _scriptRunnerData = options.Value.ScriptRunnerData;
             _logger = logger;
         }
 
@@ -53,9 +49,9 @@ namespace ReviewGrabberBot.Services
                 {
                     var processInfo = new ProcessStartInfo
                     {
-                        WorkingDirectory = _workingDirectory,
-                        Arguments = string.Format(_arguments, resource, link, restaurant.Name),
-                        FileName = _fileName
+                        WorkingDirectory = _scriptRunnerData.WorkingDirectory,
+                        Arguments = string.Format(_scriptRunnerData.Arguments, resource, link, restaurant.Name),
+                        FileName = _scriptRunnerData.FileName
                     };
                     var process = Process.Start(processInfo);
                     process?.WaitForExit();

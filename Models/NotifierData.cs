@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace ReviewGrabberBot.Models
 {
-    internal sealed class NotifierOptionsData
+    internal sealed class NotifierData
     {
         [JsonProperty(Required = Required.Always)] public List<Restaurant> Restaurants;
         
