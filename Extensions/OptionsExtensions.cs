@@ -24,7 +24,11 @@ namespace ReviewGrabberBot.Extensions
                     ?? throw new EnvironmentVariableNotFoundException("REVIEW_GRABBER_OPTIONS_PATH");
 
                 var json = File.ReadAllText(reviewGrabberOptionsPath);
-                options = JsonConvert.DeserializeObject<ReviewGrabberOptions>(json);
+                var tempOptions = JsonConvert.DeserializeObject<ReviewGrabberOptions>(json);
+
+                options.BotData = tempOptions.BotData;
+                options.NotifierData = tempOptions.NotifierData;
+                options.ScriptRunnerData = tempOptions.ScriptRunnerData;
             });
 
             botToken = config["BOT_TOKEN"]
