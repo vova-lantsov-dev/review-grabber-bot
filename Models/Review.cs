@@ -45,12 +45,19 @@ namespace ReviewGrabberBot.Models
 
         [BsonElement("profile_link")] public string ProfileUrl;
 
+        [BsonElement("type")] public string ReviewType;
+
         public string ToString(int maxCountOfStars, bool preferAvatarOverProfileLink)
         {
             var result = new StringBuilder();
 
+            result.AppendFormat("_Ресторан:_ *{0}*\n_Источник:_ *{1}*", RestaurantName, Resource);
+            
+            if (ReviewType != null)
+                result.AppendFormat("\n_Тип отзыва:_ *{0}*", ReviewType);
+                
             var link = !preferAvatarOverProfileLink ? ProfileUrl ?? AuthorAvatar : AuthorAvatar ?? ProfileUrl;
-            result.AppendFormat("_Ресторан:_ *{0}*\n_Источник:_ *{1}*\n{2} _({3})_", RestaurantName, Resource,
+            result.AppendFormat("\n{0} _({1})_",
                 string.IsNullOrWhiteSpace(link) ? AuthorName : $"[{AuthorName}]({link})", Date);
 
             if (Rating > 0)
