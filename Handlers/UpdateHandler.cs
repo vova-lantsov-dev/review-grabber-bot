@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -22,7 +23,7 @@ namespace ReviewGrabberBot.Handlers
     internal sealed class UpdateHandler : IUpdateHandler
     {
         private readonly TelegramBotClient _client;
-        private readonly BotData _botData;
+        private readonly List<Restaurant> _restaurants;
         private readonly Context _context;
         private readonly ILogger<UpdateHandler> _logger;
         private readonly HttpClient _httpClient;
@@ -30,7 +31,7 @@ namespace ReviewGrabberBot.Handlers
         public UpdateHandler(TelegramBotClient client, Context context, IOptions<Options.ReviewGrabberOptions> options,
             ILogger<UpdateHandler> logger, HttpClient httpClient)
         {
-            _botData = options.Value.BotData;
+            _restaurants = options.Value.NotifierData.Restaurants;
             _client = client;
             _context = context;
             _logger = logger;
@@ -42,11 +43,13 @@ namespace ReviewGrabberBot.Handlers
             // ReSharper disable once SwitchStatementMissingSomeCases
             switch (update.Type)
             {
-                case UpdateType.CallbackQuery when update.CallbackQuery.Message != null &&
-                                                   update.CallbackQuery.Message.Chat.Id == _botData.ChatId &&
-                                                   _botData.AdminIds.Contains(update.CallbackQuery.From.Id):
+                case UpdateType.CallbackQuery when update.CallbackQuery.Message != null:
                 {
                     var q = update.CallbackQuery;
+                    var chatId = _restaurants.Find(r => r.ChatId == q.Message.Chat.Id)?.ChatId ?? -1L;
+                    if (chatId == -1L)
+                        break;
+                    
                     var separated = q.Data.Split('~');
                     if (separated.Length == 0)
                         return;
@@ -60,7 +63,7 @@ namespace ReviewGrabberBot.Handlers
                             if (review == default)
                                 break;
 
-                            await _client.EditMessageTextAsync(_botData.ChatId, q.Message.MessageId,
+                            await _client.EditMessageTextAsync(chatId, q.Message.MessageId,
                                 string.Concat(review, "\n\n", "*Комментарии:*", "\n\n",
                                     string.Join("\n\n", review.Comments)),
                                 ParseMode.Markdown, replyMarkup: !review.IsReadOnly && review.ReplyLink != null
@@ -72,7 +75,7 @@ namespace ReviewGrabberBot.Handlers
 
                         default:
                         {
-                            await _client.SendTextMessageAsync(_botData.ChatId,
+                            await _client.SendTextMessageAsync(chatId,
                                 string.Concat($"*Received bad request*\n\n```separated[1] == \"{separated[1]}\"```\n\n",
                                     "Maybe, something works wrong. Please, contact the developer."),
                                 ParseMode.Markdown, cancellationToken: cancellationToken);
@@ -89,14 +92,16 @@ namespace ReviewGrabberBot.Handlers
 
                 case UpdateType.Message
                     when update.Message.Type == MessageType.Text &&
-                         update.Message.ReplyToMessage != null &&
-                         _botData.AdminIds.Contains(update.Message.From.Id):
+                         update.Message.ReplyToMessage != null:
                 {
                     var m = update.Message;
+                    var restaurant = _restaurants.Find(r => r.ChatId == m.Chat.Id);
+                    if (restaurant == default || !restaurant.AdminIds.Contains(m.From.Id))
+                        break;
 
                     var googleReviewMessage = await _context.GoogleReviewMessages
-                        .Find(grm => grm.MessageId == m.ReplyToMessage.MessageId)
-                        .FirstOrDefaultAsync(cancellationToken);
+                        .Find(grm => grm.MessageId == m.ReplyToMessage.MessageId &&
+                                     grm.ChatId == m.Chat.Id).FirstOrDefaultAsync(cancellationToken);
                     if (googleReviewMessage == default)
                         return;
 
@@ -139,18 +144,10 @@ namespace ReviewGrabberBot.Handlers
             }
         }
 
-        public async Task HandleError(Exception exception, CancellationToken cancellationToken)
+        public Task HandleError(Exception exception, CancellationToken cancellationToken)
         {
-            try
-            {
-                await _client.SendTextMessageAsync(_botData.ChatId,
-                    $"*Error occurred while getting updates*\n\n```{exception}```\n\nPlease, contact the developer.",
-                    ParseMode.Markdown, cancellationToken: cancellationToken);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, "Error occurred while sending the request to a Telegram server");
-            }
+            _logger.LogError(exception, "Error occurred while handling an update");
+            return Task.CompletedTask;
         }
 
         public UpdateType[] AllowedUpdates => new[] {UpdateType.CallbackQuery, UpdateType.Message};

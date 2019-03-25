@@ -20,7 +20,6 @@ namespace ReviewGrabberBot.Services
         private readonly TelegramBotClient _client;
         private readonly Context _context;
         private readonly NotifierData _notifierData;
-        private readonly long _chatId;
         
         public BotNotifierService(Context context, TelegramBotClient client, IOptions<ReviewGrabberOptions> options,
             ILogger<BotNotifierService> logger)
@@ -29,7 +28,6 @@ namespace ReviewGrabberBot.Services
             _context = context;
             _client = client;
             _notifierData = options.Value.NotifierData;
-            _chatId = options.Value.BotData.ChatId;
         }
         
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -68,10 +66,11 @@ namespace ReviewGrabberBot.Services
                         new InlineKeyboardButton { Text = "Открыть отзыв", Url = notSentReview.ReplyLink }
                     });
 
-                var sentMessage = await _client.SendTextMessageAsync(_chatId, notSentReview.ToString(
+                var chatId = _notifierData.Restaurants.Find(r => r.Name == notSentReview.RestaurantName).ChatId;
+                var sentMessage = await _client.SendTextMessageAsync(chatId, notSentReview.ToString(
                         _notifierData.MaxValuesOfRating.TryGetValue(notSentReview.Resource, out var maxValueOfRating)
-                            ? maxValueOfRating
-                            : -1, _notifierData.PreferAvatarOverProfileLinkFor.Contains(notSentReview.Resource)),
+                            ? maxValueOfRating : -1,
+                        _notifierData.PreferAvatarOverProfileLinkFor.Contains(notSentReview.Resource)),
                     ParseMode.Markdown, cancellationToken: cancellationToken, replyMarkup: buttons.Count > 0
                         ? new InlineKeyboardMarkup(buttons) : null);
 

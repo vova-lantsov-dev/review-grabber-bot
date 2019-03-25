@@ -7,5 +7,7 @@ namespace ReviewGrabberBot.Models
         [BsonId] public string ReviewId;
 
         public int MessageId;
+
+        public long ChatId;
     }
 }

@@ -26,7 +26,6 @@ namespace ReviewGrabberBot.Extensions
                 var json = File.ReadAllText(reviewGrabberOptionsPath);
                 var tempOptions = JsonConvert.DeserializeObject<ReviewGrabberOptions>(json);
 
-                options.BotData = tempOptions.BotData;
                 options.NotifierData = tempOptions.NotifierData;
                 options.ScriptRunnerData = tempOptions.ScriptRunnerData;
             });
