@@ -16,8 +16,7 @@ namespace ReviewGrabberBot.Extensions
             services.AddSingleton<HttpClient>();
 
             services.AddHostedService<BotHandlerService>();
-            services.AddHostedService<ScriptRunnerService>();
-            services.AddHostedService<BotNotifierService>();
+            services.AddHostedService<WorkerService>();
         }
     }
 }
