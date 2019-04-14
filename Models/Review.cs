@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using ReviewGrabberBot.Formatters;
@@ -44,16 +45,24 @@ namespace ReviewGrabberBot.Models
 
         [BsonElement("profile_link")] public string ProfileUrl;
 
-        public string ToString(int maxCountOfStars)
+        [BsonElement("type")] public string ReviewType;
+
+        public string ToString(int maxCountOfStars, bool preferAvatarOverProfileLink)
         {
             var result = new StringBuilder();
+
+            result.AppendFormat("_Ресторан:_ *{0}*\n_Источник:_ *{1}*", RestaurantName, Resource);
             
-            result.AppendFormat("Ресторан: *{0}*\nИсточник: *{1}*\n{2} _({3})_", RestaurantName, Resource,
-                string.IsNullOrWhiteSpace(ProfileUrl) ? AuthorName : $"[{AuthorName}]({ProfileUrl})", Date);
+            if (ReviewType != null)
+                result.AppendFormat("\n_Тип отзыва:_ *{0}*", ReviewType);
+                
+            var link = !preferAvatarOverProfileLink ? ProfileUrl ?? AuthorAvatar : AuthorAvatar ?? ProfileUrl;
+            result.AppendFormat("\n{0} _({1})_",
+                string.IsNullOrWhiteSpace(link) ? AuthorName : $"[{AuthorName}]({link})", Date);
 
             if (Rating > 0)
             {
-                result.Append("\nРейтинг: ");
+                result.Append("\n_Рейтинг:_ ");
                 result.AppendJoin(string.Empty, Enumerable.Repeat("👍", Rating));
 
                 var emptyStarsCount = maxCountOfStars - Rating;
@@ -69,7 +78,11 @@ namespace ReviewGrabberBot.Models
                     result.AppendFormat("\n{0} 👎", Dislikes);
             }
 
-            result.AppendFormat("\nТекст: {0}", Text);
+            if (!string.IsNullOrWhiteSpace(Text))
+                result.AppendFormat("\n_Текст:_ {0}", Regex.Replace(Text,
+                    "(?<token>[*_\\\\`\\\\[\\]])",
+                    m => $"\\{m.Groups["token"].Value}"));
+            
             return result.ToString();
         }
     }

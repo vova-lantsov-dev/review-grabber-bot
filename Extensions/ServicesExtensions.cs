@@ -1,3 +1,4 @@
+using System.Net.Http;
 using Microsoft.Extensions.DependencyInjection;
 using ReviewGrabberBot.Handlers;
 using ReviewGrabberBot.Services;
@@ -12,10 +13,10 @@ namespace ReviewGrabberBot.Extensions
             services.AddSingleton<Context>();
             services.AddSingleton(new TelegramBotClient(botToken));
             services.AddSingleton<UpdateHandler>();
+            services.AddSingleton<HttpClient>();
 
             services.AddHostedService<BotHandlerService>();
-            services.AddHostedService<ScriptRunnerService>();
-            services.AddHostedService<BotNotifierService>();
+            services.AddHostedService<WorkerService>();
         }
     }
 }
